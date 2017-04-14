@@ -1,54 +1,54 @@
 <?php
-	/* ïîäêëþ÷àåì ðåãèñòðàöèîííûå äàííûå */
+	/* Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ Ñ€ÐµÐ³Ð¸ÑÑ‚Ñ€Ð°Ñ†Ð¸Ð¾Ð½Ð½Ñ‹Ðµ Ð´Ð°Ð½Ð½Ñ‹Ðµ */
 	require_once "ms_system.php";
-	/* êîííåêò ñ áàçàé äàííûõ ERP */
+	/* ÐºÐ¾Ð½Ð½ÐµÐºÑ‚ Ñ Ð±Ð°Ð·Ð°Ð¹ Ð´Ð°Ð½Ð½Ñ‹Ñ… ERP */
 	$dbh_av = ibase_connect($ht_av, $ur_av, $pd_av, "win1251");		
 	
-	/* Çàãðóæàåì òîâàð â MS */
+	/* Ð—Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ñ‚Ð¾Ð²Ð°Ñ€ Ð² MS */
 	
-	/* îáúåêò ñîåäèíåíèÿ  */
+	/* Ð¾Ð±ÑŠÐµÐºÑ‚ ÑÐ¾ÐµÐ´Ð¸Ð½ÐµÐ½Ð¸Ñ  */
 	$connector = new COM("Cleverence.Warehouse.StorageConnector") or die("error create StorageConnector");
-	/* ïîäêëþ÷àåìñÿ ê áàçå MS */
+	/* Ð¿Ð¾Ð´ÐºÐ»ÑŽÑ‡Ð°ÐµÐ¼ÑÑ Ðº Ð±Ð°Ð·Ðµ MS */
 	$connector->SelectCurrentApp($ms_base); 
-	 /* íà÷èíàåì çàãðóçêó */
+	 /* Ð½Ð°Ñ‡Ð¸Ð½Ð°ÐµÐ¼ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ */
 	try {
 		$connector->BeginUploadProducts(true, true, true); 
-		/* ìàññèâ òîâàðîâ */
+		/* Ð¼Ð°ÑÑÐ¸Ð² Ñ‚Ð¾Ð²Ð°Ñ€Ð¾Ð² */
 		$products = new COM("Cleverence.Warehouse.ProductCollection") or die("error create ProductCollection");
 		$q_select = "select * from R_MS_TOVAR";
 		$res = ibase_query($dbh_av, $q_select);
 		while ($row = ibase_fetch_assoc($res)) {
-			/* ïðîâåðÿåì ïî id */ 
+			/* Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð¿Ð¾ id */ 
 			$uploadProduct = $products->FindById($row['ITEMID']);
 			if($uploadProduct == null) {
-				/* çàãðóæàåì ïî 1000, ÷òîáû êîíòðîëèðîâàòü íàãðóçêó */
+				/* Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ð¿Ð¾ 1000, Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð½Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ */
 				if($products->Count >= 1000) {
-					/* çàãðóæàåì â áàçó */
+					/* Ð·Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÐ¼ Ð² Ð±Ð°Ð·Ñƒ */
 					$connector->UploadProducts($products);
 					$products = new COM("Cleverence.Warehouse.ProductCollection") or die("error create ProductCollection");
 				}
-				/* èíôîðìàöèÿ ïî òîâàðó */
+				/* Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¿Ð¾ Ñ‚Ð¾Ð²Ð°Ñ€Ñƒ */
 				$uploadProduct = new COM("Cleverence.Warehouse.Product") or die("error create Product");
 				$uploadProduct->SetField("Id", $row['ITEMID']);
 				$uploadProduct->SetField("Name", $row['NAME']);
 				$uploadProduct->SetField("Marking", $row['MARKING']);
 				$uploadProduct->SetField("Barcode", $row['BARCODE']);	
-				$uploadProduct->SetField("ÑòàâêàÍÄÑ", $row['NDS']);
-				$uploadProduct->SetField("Ïðîèçâîäèòåëü", $row['VENDOR']);
-				$uploadProduct->SetField("ÏðîèçâîäèòåëüÈä", $row['VENDOR_ID']);
-				$uploadProduct->SetField("Ñòðàíà", $row['CNTR']);
-				$uploadProduct->SetField("ÑòðàíàÈä", $row['CNTR_ID']);
+				$uploadProduct->SetField("Ð¡Ñ‚Ð°Ð²ÐºÐ°ÐÐ”Ð¡", $row['NDS']);
+				$uploadProduct->SetField("ÐŸÑ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒ", $row['VENDOR']);
+				$uploadProduct->SetField("ÐŸÑ€Ð¾Ð¸Ð·Ð²Ð¾Ð´Ð¸Ñ‚ÐµÐ»ÑŒÐ˜Ð´", $row['VENDOR_ID']);
+				$uploadProduct->SetField("Ð¡Ñ‚Ñ€Ð°Ð½Ð°", $row['CNTR']);
+				$uploadProduct->SetField("Ð¡Ñ‚Ñ€Ð°Ð½Ð°Ð˜Ð´", $row['CNTR_ID']);
 				$uploadProduct->SetField("withsn", '1');
 				$uploadProduct->SetField("withserial", '1');
 				
-				/* èíôîðìàöèÿ ïî óïàêîâêå */
+				/* Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ Ð¿Ð¾ ÑƒÐ¿Ð°ÐºÐ¾Ð²ÐºÐµ */
 				$uploadPacking = new COM("Cleverence.Warehouse.Packing") or die("error create Packing");
 				$uploadPacking->SetField("Id", $row['ITEMID']);
 				$uploadPacking->SetField("Name", $row['UNIT']);
 
-				$uploadProduct->Packings->Add($uploadPacking); /* äîáàâëÿåì â òîâàð óïàêîâêó */
+				$uploadProduct->Packings->Add($uploadPacking); /* Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð² Ñ‚Ð¾Ð²Ð°Ñ€ ÑƒÐ¿Ð°ÐºÐ¾Ð²ÐºÑƒ */
 				
-				$products->Add($uploadProduct); /* äîáàâëÿåì òîâàð â ìàññèâ */
+				$products->Add($uploadProduct); /* Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ñ‚Ð¾Ð²Ð°Ñ€ Ð² Ð¼Ð°ÑÑÐ¸Ð² */
 			}
 		}
 		ibase_free_result($res);
@@ -56,10 +56,10 @@
 		if($products->Count > 0) {
 			$connector->UploadProducts($products);
 		}
-		/* çàâåðøàåì çàãðóçêó */
+		/* Ð·Ð°Ð²ÐµÑ€ÑˆÐ°ÐµÐ¼ Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÑƒ */
 		$connector->EndUploadProducts();
 	} catch (Exception $e) {
-		/* îòìåíà çàãðóçêè */
+		/* Ð¾Ñ‚Ð¼ÐµÐ½Ð° Ð·Ð°Ð³Ñ€ÑƒÐ·ÐºÐ¸ */
 		$connector->ResetUploadProducts();
 	}
 
